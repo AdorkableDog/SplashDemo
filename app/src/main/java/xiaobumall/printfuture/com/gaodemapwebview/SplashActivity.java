@@ -8,8 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageView;
 import android.text.TextUtils;
-import android.util.Log;
-import android.view.View;
+import android.widget.FrameLayout;
 
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -36,6 +35,14 @@ public class SplashActivity extends AppCompatActivity {
 	private static final String TAG = "SplashActivity";
 	@BindView(R.id.img_launcher_welcome)
 	AppCompatImageView mImageView;
+
+	@BindView(R.id.img_launcher_welcome_buttom)
+	AppCompatImageView imgLauncherWelcomeButtom;
+
+	@BindView(R.id.frameLayout)
+	FrameLayout frameLayout;
+
+
 	private boolean isResume;
 
 	@Override
@@ -62,17 +69,40 @@ public class SplashActivity extends AppCompatActivity {
 	}
 
 
-
 	public void subscribe() {
 
 //		String imgCacheUrl = "http://ww3.sinaimg.cn/large/610dc034jw1f7rmrmrscrj20u011hgp1.jpg";//ConfigManage.INSTANCE.getBannerURL();
-		String imgCacheUrl = ConfigManage.INSTANCE.getBannerURL();
+//		String imgCacheUrl = ConfigManage.INSTANCE.getBannerURL();
+//		Log.i(TAG, "subscribe: " + imgCacheUrl);
 
-		Log.i(TAG, "subscribe: " + imgCacheUrl);
-		if (!TextUtils.isEmpty(imgCacheUrl)) {
+		if (!TextUtils.isEmpty(ConfigManage.INSTANCE.getBannerURL())&& !TextUtils.isEmpty(ConfigManage.INSTANCE.getSplashURL())) {
 			try {
 				Picasso.with(this)
 						.load(ConfigManage.INSTANCE.getBannerURL())
+						.into(imgLauncherWelcomeButtom, new Callback() {
+							@Override
+							public void onSuccess() {
+								Handler handler = new Handler();
+								handler.postDelayed(new Runnable() {
+									@Override
+									public void run() {
+										if (!isResume) {
+											finish();
+											return;
+										}
+										goHomeActivity();
+									}
+								}, 5000);
+							}
+
+							@Override
+							public void onError() {
+								goHomeActivity();
+							}
+						});
+
+				Picasso.with(this)
+						.load(ConfigManage.INSTANCE.getSplashURL())
 						.into(mImageView, new Callback() {
 							@Override
 							public void onSuccess() {
@@ -86,7 +116,7 @@ public class SplashActivity extends AppCompatActivity {
 										}
 										goHomeActivity();
 									}
-								}, 2500);
+								}, 5000);
 							}
 
 							@Override
@@ -106,9 +136,9 @@ public class SplashActivity extends AppCompatActivity {
 
 		Intent intent = new Intent(SplashActivity.this, HomeActivity.class);
 		startActivity(intent);
-		// Activity 切换淡入淡出动画
+//		 Activity 切换淡入淡出动画
 		finish();
-//		overridePendingTransition(R.anim.anim_slide_in, R.anim.anim_slide_out);
+		overridePendingTransition(R.anim.anim_slide_in, R.anim.anim_slide_out);
 	}
 
 
