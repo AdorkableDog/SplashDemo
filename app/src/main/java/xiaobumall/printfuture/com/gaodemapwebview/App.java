@@ -45,7 +45,6 @@ public class App extends Application {
 
 		Picasso picasso  = builder.build();
 		Picasso.setSingletonInstance(picasso);
-
 //		RxCache.init(this);//为RxCache提供Context
 //		new RxCache.Builder()
 //				.setDebug(true)   //开启debug，开启后会打印缓存相关日志，默认为true
@@ -55,7 +54,6 @@ public class App extends Application {
 //				.setDiskCacheSizeByMB(100)    //设置磁盘缓存的大小，单位是MB
 //				.setDiskDirName("RxCache")    //设置磁盘缓存的文件夹名称
 //				.build();
-
 		INSTANCE = this;
 		// 初始化主题色
 		ConfigManage.INSTANCE.initConfig(this);

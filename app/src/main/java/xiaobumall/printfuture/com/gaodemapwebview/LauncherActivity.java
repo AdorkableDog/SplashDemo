@@ -104,6 +104,7 @@ public class LauncherActivity extends AppCompatActivity {
 								}
 							}, 1500);
 						}
+
 						@Override
 						public void onError() {
 							goHomeActivity();
@@ -144,8 +145,8 @@ public class LauncherActivity extends AppCompatActivity {
 //							setDatas(meiziResult);
 //							getRandomImg(meiziResult);
 							// 1 、判断手机SD 是否存在
-							String top = null,Bottom = null;
-
+							String top = null, Bottom = null;
+							//@TODO --------------------------------------------
 							for (int i = 0; i < meiziResult.getData().size(); i++) {
 								top = meiziResult.getData().get(i).getImg().getTop();
 								String[] split = top.split(".com");
@@ -160,7 +161,7 @@ public class LauncherActivity extends AppCompatActivity {
 								downLoadImg(split[1], s);
 							}
 //							int size = meiziResult.getData().size();
-							//@TODO --------------------------------------------
+
 						}
 					}
 				});
