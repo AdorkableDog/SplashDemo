@@ -159,7 +159,7 @@ public class LauncherActivity extends AppCompatActivity {
 							String s = split[1].split("key=")[1];
 							Log.i(TAG, "onNext: " + split[0] + "----" + split[1]);
 							downLoadImg(split[1],s);
-
+							//@TODO --------------------------------------------
 						}
 					}
 				});
