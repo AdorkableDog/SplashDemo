@@ -15,11 +15,15 @@ import com.lei.lib.java.rxcache.util.RxUtil;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.functions.Consumer;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Response;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
@@ -29,6 +33,8 @@ import rx.subscriptions.CompositeSubscription;
 import xiaobumall.printfuture.com.gaodemapwebview.entity.CategoryResults;
 import xiaobumall.printfuture.com.gaodemapwebview.network.NetWork;
 import xiaobumall.printfuture.com.gaodemapwebview.utils.ConfigManage;
+import xiaobumall.printfuture.com.gaodemapwebview.utils.FileUtils;
+import xiaobumall.printfuture.com.gaodemapwebview.utils.HttpCallBack;
 import xiaobumall.printfuture.com.gaodemapwebview.utils.TimeUtils;
 
 /**
@@ -51,6 +57,7 @@ public class LauncherActivity extends AppCompatActivity {
 
 	private CompositeSubscription mSubscriptions;
 	private boolean isResume;
+
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -120,6 +127,8 @@ public class LauncherActivity extends AppCompatActivity {
 				.subscribeOn(Schedulers.io())
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribe(new Observer<CategoryResults>() {
+
+
 					@Override
 					public void onCompleted() {
 						Log.i(TAG, "onCompleted: ");
@@ -138,13 +147,61 @@ public class LauncherActivity extends AppCompatActivity {
 						Log.i(TAG, "onNext: " + meiziResult.getStatus());
 						if (meiziResult != null && meiziResult.getData() != null) {
 //							setDatas(meiziResult);
-							getRandomImg(meiziResult);
+//							getRandomImg(meiziResult);
+							// 1 、判断手机SD 是否存在
+							String top = null;
+							for (int i = 0; i < meiziResult.getData().size(); i++) {
+								top = meiziResult.getData().get(i).getImg().getTop();
+							}
+
+
+							String[] split = top.split(".com");
+							String s = split[1].split("key=")[1];
+							Log.i(TAG, "onNext: " + split[0] + "----" + split[1]);
+							downLoadImg(split[1],s);
+
 						}
 					}
 				});
 		mSubscriptions.add(subscription);
-
 	}
+
+
+	public void downLoadImg(String top,String img_name) {
+		final File file = FileUtils.createFile(LauncherActivity.this,img_name);
+		NetWork.getGankApi().downloadFile(top).enqueue(new retrofit2.Callback<ResponseBody>() {
+			@Override
+			public void onResponse(Call<ResponseBody> call, final Response<ResponseBody> response) {
+				//下载文件放在子线程
+				new Thread() {
+					@Override
+					public void run() {
+						super.run();
+						//保存到本地
+						FileUtils.writeFile2Disk(response, file, new HttpCallBack() {
+							@Override
+							public void onLoading(final long current, final long total) {
+
+							}
+
+							@Override
+							public void isloading(boolean isloading) {
+								if (isloading){
+
+								}
+							}
+						});
+					}
+				}.start();
+			}
+
+			@Override
+			public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+			}
+		});
+	}
+
 
 	private void setDatas(final CategoryResults meiziResult) {
 		/**
@@ -181,7 +238,7 @@ public class LauncherActivity extends AppCompatActivity {
 					@Override
 					public void accept(CacheResponse<CategoryResults> cacheBeanCacheResponse) throws Exception {
 						for (int i = 0; i < cacheBeanCacheResponse.getData().getData().size(); i++) {
-						Log.i(TAG, "获取数据accept: " + cacheBeanCacheResponse.getData().getData().get(i).getImg().getBottom());
+							Log.i(TAG, "获取数据accept: " + cacheBeanCacheResponse.getData().getData().get(i).getImg().getBottom());
 						}
 						getRandomImg(cacheBeanCacheResponse.getData());
 					}
