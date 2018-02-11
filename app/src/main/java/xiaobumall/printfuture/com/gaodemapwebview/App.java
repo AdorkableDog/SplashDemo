@@ -3,9 +3,7 @@ package xiaobumall.printfuture.com.gaodemapwebview;
 import android.app.Application;
 
 
-import com.lei.lib.java.rxcache.RxCache;
-import com.lei.lib.java.rxcache.converter.GsonConverter;
-import com.lei.lib.java.rxcache.mode.CacheMode;
+
 import com.squareup.picasso.LruCache;
 import com.squareup.picasso.Picasso;
 
@@ -48,15 +46,15 @@ public class App extends Application {
 		Picasso picasso  = builder.build();
 		Picasso.setSingletonInstance(picasso);
 
-		RxCache.init(this);//为RxCache提供Context
-		new RxCache.Builder()
-				.setDebug(true)   //开启debug，开启后会打印缓存相关日志，默认为true
-				.setConverter(new GsonConverter())  //设置转换方式，默认为Gson转换
-				.setCacheMode(CacheMode.BOTH)   //设置缓存模式，默认为二级缓存
-				.setMemoryCacheSizeByMB(50)   //设置内存缓存的大小，单位是MB
-				.setDiskCacheSizeByMB(100)    //设置磁盘缓存的大小，单位是MB
-				.setDiskDirName("RxCache")    //设置磁盘缓存的文件夹名称
-				.build();
+//		RxCache.init(this);//为RxCache提供Context
+//		new RxCache.Builder()
+//				.setDebug(true)   //开启debug，开启后会打印缓存相关日志，默认为true
+//				.setConverter(new GsonConverter())  //设置转换方式，默认为Gson转换
+//				.setCacheMode(CacheMode.BOTH)   //设置缓存模式，默认为二级缓存
+//				.setMemoryCacheSizeByMB(50)   //设置内存缓存的大小，单位是MB/app/filemanager/file/file?key=fd9653c3814d71a772c76eb380aa2fe3
+//				.setDiskCacheSizeByMB(100)    //设置磁盘缓存的大小，单位是MB
+//				.setDiskDirName("RxCache")    //设置磁盘缓存的文件夹名称
+//				.build();
 
 		INSTANCE = this;
 		// 初始化主题色

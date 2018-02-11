@@ -9,9 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.Log;
 
-import com.lei.lib.java.rxcache.RxCache;
-import com.lei.lib.java.rxcache.entity.CacheResponse;
-import com.lei.lib.java.rxcache.util.RxUtil;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -20,7 +17,6 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.functions.Consumer;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -35,7 +31,6 @@ import xiaobumall.printfuture.com.gaodemapwebview.network.NetWork;
 import xiaobumall.printfuture.com.gaodemapwebview.utils.ConfigManage;
 import xiaobumall.printfuture.com.gaodemapwebview.utils.FileUtils;
 import xiaobumall.printfuture.com.gaodemapwebview.utils.HttpCallBack;
-import xiaobumall.printfuture.com.gaodemapwebview.utils.TimeUtils;
 
 /**
  * 创建日期：2018/1/26
@@ -57,6 +52,8 @@ public class LauncherActivity extends AppCompatActivity {
 
 	private CompositeSubscription mSubscriptions;
 	private boolean isResume;
+
+	private Handler mHandler = new Handler();
 
 
 	@Override
@@ -107,7 +104,6 @@ public class LauncherActivity extends AppCompatActivity {
 								}
 							}, 1500);
 						}
-
 						@Override
 						public void onError() {
 							goHomeActivity();
@@ -117,7 +113,6 @@ public class LauncherActivity extends AppCompatActivity {
 			goHomeActivity();
 		}
 	}
-//	}
 
 	private void cacheRandomImg() {
 
@@ -149,16 +144,22 @@ public class LauncherActivity extends AppCompatActivity {
 //							setDatas(meiziResult);
 //							getRandomImg(meiziResult);
 							// 1 、判断手机SD 是否存在
-							String top = null;
+							String top = null,Bottom = null;
+
 							for (int i = 0; i < meiziResult.getData().size(); i++) {
 								top = meiziResult.getData().get(i).getImg().getTop();
+								String[] split = top.split(".com");
+								String s = split[1].split("key=")[1];
+								downLoadImg(split[1], s);
 							}
 
-
-							String[] split = top.split(".com");
-							String s = split[1].split("key=")[1];
-							Log.i(TAG, "onNext: " + split[0] + "----" + split[1]);
-							downLoadImg(split[1],s);
+							for (int i = 0; i < meiziResult.getData().size(); i++) {
+								Bottom = meiziResult.getData().get(i).getImg().getBottom();
+								String[] split = Bottom.split(".com");
+								String s = split[1].split("key=")[1];
+								downLoadImg(split[1], s);
+							}
+//							int size = meiziResult.getData().size();
 							//@TODO --------------------------------------------
 						}
 					}
@@ -167,8 +168,8 @@ public class LauncherActivity extends AppCompatActivity {
 	}
 
 
-	public void downLoadImg(String top,String img_name) {
-		final File file = FileUtils.createFile(LauncherActivity.this,img_name);
+	public void downLoadImg(String top, String img_name) {
+		final File file = FileUtils.createFile(LauncherActivity.this, img_name);
 		NetWork.getGankApi().downloadFile(top).enqueue(new retrofit2.Callback<ResponseBody>() {
 			@Override
 			public void onResponse(Call<ResponseBody> call, final Response<ResponseBody> response) {
@@ -186,7 +187,7 @@ public class LauncherActivity extends AppCompatActivity {
 
 							@Override
 							public void isloading(boolean isloading) {
-								if (isloading){
+								if (isloading) {
 
 								}
 							}
@@ -203,51 +204,51 @@ public class LauncherActivity extends AppCompatActivity {
 	}
 
 
-	private void setDatas(final CategoryResults meiziResult) {
-		/**
-		 * 获取数据成功之后 ， 使用RXcache 缓存数据，
-		 */
-		RxCache.getInstance()
-				.put("meiziResult", meiziResult, 60 * 1000)
-				.compose(RxUtil.<Boolean>io_main())
-				.subscribe(new Consumer<Boolean>() {
-					@Override
-					public void accept(Boolean aBoolean) throws Exception {
-						if (aBoolean) {
-							for (int i = 0; i < meiziResult.getData().size(); i++) {
-								String img = meiziResult.getData().get(i).getImg().getBottom();
-								String Top = meiziResult.getData().get(i).getImg().getTop();
-								Log.i(TAG, "accept: 数据保存成功啦！" + img + "  ------ " + Top);
-							}
-						}
-					}
-				}, new Consumer<Throwable>() {
-					@Override
-					public void accept(Throwable throwable) throws Exception {
-						Log.i(TAG, throwable.getLocalizedMessage());
-					}
-				});
-		getDatas();
-	}
+//	private void setDatas(final CategoryResults meiziResult) {
+//		/**
+//		 * 获取数据成功之后 ， 使用RXcache 缓存数据，
+//		 */
+//		RxCache.getInstance()
+//				.put("meiziResult", meiziResult, 60 * 1000)
+//				.compose(RxUtil.<Boolean>io_main())
+//				.subscribe(new Consumer<Boolean>() {
+//					@Override
+//					public void accept(Boolean aBoolean) throws Exception {
+//						if (aBoolean) {
+//							for (int i = 0; i < meiziResult.getData().size(); i++) {
+//								String img = meiziResult.getData().get(i).getImg().getBottom();
+//								String Top = meiziResult.getData().get(i).getImg().getTop();
+//								Log.i(TAG, "accept: 数据保存成功啦！" + img + "  ------ " + Top);
+//							}
+//						}
+//					}
+//				}, new Consumer<Throwable>() {
+//					@Override
+//					public void accept(Throwable throwable) throws Exception {
+//						Log.i(TAG, throwable.getLocalizedMessage());
+//					}
+//				});
+//		getDatas();
+//	}
 
-	private void getDatas() {
-		RxCache.getInstance()
-				.get("meiziResult", false, CategoryResults.class)
-				.compose(RxUtil.<CacheResponse<CategoryResults>>io_main())
-				.subscribe(new Consumer<CacheResponse<CategoryResults>>() {
-					@Override
-					public void accept(CacheResponse<CategoryResults> cacheBeanCacheResponse) throws Exception {
-						for (int i = 0; i < cacheBeanCacheResponse.getData().getData().size(); i++) {
-							Log.i(TAG, "获取数据accept: " + cacheBeanCacheResponse.getData().getData().get(i).getImg().getBottom());
-						}
-						getRandomImg(cacheBeanCacheResponse.getData());
-					}
-				}, new Consumer<Throwable>() {
-					@Override
-					public void accept(Throwable throwable) throws Exception {
-					}
-				});
-	}
+//	private void getDatas() {
+//		RxCache.getInstance()
+//				.get("meiziResult", false, CategoryResults.class)
+//				.compose(RxUtil.<CacheResponse<CategoryResults>>io_main())
+//				.subscribe(new Consumer<CacheResponse<CategoryResults>>() {
+//					@Override
+//					public void accept(CacheResponse<CategoryResults> cacheBeanCacheResponse) throws Exception {
+//						for (int i = 0; i < cacheBeanCacheResponse.getData().getData().size(); i++) {
+//							Log.i(TAG, "获取数据accept: " + cacheBeanCacheResponse.getData().getData().get(i).getImg().getBottom());
+//						}
+//						getRandomImg(cacheBeanCacheResponse.getData());
+//					}
+//				}, new Consumer<Throwable>() {
+//					@Override
+//					public void accept(Throwable throwable) throws Exception {
+//					}
+//				});
+//	}
 
 	private boolean isResumes = true;
 
@@ -257,14 +258,14 @@ public class LauncherActivity extends AppCompatActivity {
 //		int randomNum = new Random().nextInt(meiziResult.getData().get_$20180207());
 		for (int i = 0; i < meiziResult.getData().size(); i++) {
 			String publishedAt = meiziResult.getData().get(i).getShowtime();
-			String nowTime = TimeUtils.getNowTime();
-			Log.i(TAG, "getRandomImg: " + " nowTime: " + nowTime + " publishedAt: " + publishedAt);
+//			String nowTime = TimeUtils.getNowTime();
+//			Log.i(TAG, "getRandomImg: " + " nowTime: " + nowTime + " publishedAt: " + publishedAt);
 
-			if (publishedAt.equals(nowTime)) {
-				cacheMainImg(meiziResult.getData().get(i).getImg().getTop());
-				cacheRandomImg(meiziResult.getData().get(i).getImg().getBottom());
-				isResumes = false;
-			}
+//			if (publishedAt.equals(nowTime)) {
+//				cacheMainImg(meiziResult.getData().get(i).getImg().getTop());
+//				cacheRandomImg(meiziResult.getData().get(i).getImg().getBottom());
+//				isResumes = false;
+//			}
 		}
 
 		if (isResumes) {

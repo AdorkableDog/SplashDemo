@@ -34,10 +34,10 @@ public class FileUtils {
 		File file = null;
 		String state = Environment.getExternalStorageState();
 
-		if (state.equals(Environment.MEDIA_MOUNTED)) {
-			file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/"+img_name+".png");
-		} else {
-			file = new File(context.getCacheDir().getAbsolutePath() +  "/"+img_name+".png");
+		if(state.equals(Environment.MEDIA_MOUNTED)){
+			file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+ img_name+".jpg");
+		}else {
+			file = new File(context.getCacheDir().getAbsolutePath()+"/"+ img_name+".jpg");
 		}
 		Log.d(TAG, "file " + file.getAbsolutePath());
 		return file;
