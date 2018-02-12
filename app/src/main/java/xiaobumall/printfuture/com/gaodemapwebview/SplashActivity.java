@@ -101,8 +101,6 @@ public class SplashActivity extends AppCompatActivity {
 				}
 			}
 		}
-
-
 //		picassoLoadImg();
 	}
 
@@ -126,7 +124,6 @@ public class SplashActivity extends AppCompatActivity {
 									}
 								}, 5000);
 							}
-
 							@Override
 							public void onError() {
 								goHomeActivity();
@@ -150,7 +147,6 @@ public class SplashActivity extends AppCompatActivity {
 									}
 								}, 5000);
 							}
-
 							@Override
 							public void onError() {
 								goHomeActivity();
@@ -165,13 +161,10 @@ public class SplashActivity extends AppCompatActivity {
 	}
 
 	public void goHomeActivity() {
-
 		Intent intent = new Intent(SplashActivity.this, HomeActivity.class);
 		startActivity(intent);
 //		 Activity 切换淡入淡出动画
 		finish();
 		overridePendingTransition(R.anim.anim_slide_in, R.anim.anim_slide_out);
 	}
-
-
 }
