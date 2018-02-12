@@ -30,11 +30,16 @@ public class FileUtils {
 
 	private static final String TAG = "FileUtils";
 
-
-	public static File createFile(Context context, String img_name, String img_type) {
+	/**
+	 * 创建图片的文件
+	 *
+	 * @param img_name 图片路径
+	 * @param img_type 图片类型
+	 * @return
+	 */
+	public static File createFile(String img_name, String img_type) {
 		File file = null;
 		String state = Environment.getExternalStorageState();
-
 		if (state.equals(Environment.MEDIA_MOUNTED)) {
 			file = new File(img_name + img_type + ".jpg");
 		} else {
@@ -44,43 +49,48 @@ public class FileUtils {
 		return file;
 	}
 
+	/**
+	 * 判断图片路径是否存在
+	 *
+	 * @param path     文件路径
+	 * @param img_name 文件名称
+	 * @return
+	 */
 	public static boolean isExist(String path, String img_name) {
 		try {
-			File f = new File(path  + img_name + ".jpg");
+			File f = new File(path + img_name + ".jpg");
 			if (!f.exists()) {
 				return false;
 			}
-
 		} catch (Exception e) {
 			return false;
 		}
 		return true;
 	}
 
-
-	public static void writeFile2Disk(Response<ResponseBody> response, File file, HttpCallBack httpCallBack) {
+	/**
+	 * I/O 文件的读写操作
+	 *
+	 * @param response 文件的对象
+	 * @param file     文件
+	 */
+	public static void writeFile2Disk(Response<ResponseBody> response, File file) {// HttpCallBack httpCallBack) {
 		long currentLength = 0;
 		OutputStream os = null;
 		InputStream is = response.body().byteStream();
-		long totalLength = response.body().contentLength();
-		boolean isloading = false;
+//		long totalLength = response.body().contentLength();
+//		boolean isloading = false;
 		try {
 			os = new FileOutputStream(file);
 			int len;
-
 			byte[] buff = new byte[1024];
-
 			while ((len = is.read(buff)) != -1) {
-
 				os.write(buff, 0, len);
 				currentLength += len;
 				Log.d(TAG, "当前进度:" + currentLength);
-				httpCallBack.onLoading(currentLength, totalLength);
-
+//				httpCallBack.onLoading(currentLength, totalLength);
 			}
 			// httpCallBack.onLoading(currentLength,totalLength,true);
-
-
 		} catch (FileNotFoundException e) {
 			Log.i(TAG, "writeFile2Disk: " + e.toString());
 			e.printStackTrace();
@@ -97,12 +107,12 @@ public class FileUtils {
 			if (is != null) {
 				try {
 					is.close();
-					isloading = true;
+//					isloading = true;
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
 		}
-		httpCallBack.isloading(isloading);
+//		httpCallBack.isloading(isloading);
 	}
 }

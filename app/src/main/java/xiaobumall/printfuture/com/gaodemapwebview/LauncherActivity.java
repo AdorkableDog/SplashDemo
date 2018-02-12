@@ -55,9 +55,6 @@ public class LauncherActivity extends AppCompatActivity {
 	private CompositeSubscription mSubscriptions;
 	private boolean isResume;
 
-	private Handler mHandler = new Handler();
-
-
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -84,7 +81,6 @@ public class LauncherActivity extends AppCompatActivity {
 	}
 
 	public void subscribe() {
-
 		String imgCacheUrl = ConfigManage.INSTANCE.getSplashURL();
 		Log.i(TAG, "subscribe: " + imgCacheUrl);
 		try {
@@ -105,7 +101,6 @@ public class LauncherActivity extends AppCompatActivity {
 								}
 							}, 1500);
 						}
-
 						@Override
 						public void onError() {
 							goHomeActivity();
@@ -117,19 +112,16 @@ public class LauncherActivity extends AppCompatActivity {
 	}
 
 	private void cacheRandomImg() {
-
 		Observable<CategoryResults> observable;
 		observable = NetWork.getGankApi().getRandomBeauties("pixiu");
 		Subscription subscription = observable
 				.subscribeOn(Schedulers.io())
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribe(new Observer<CategoryResults>() {
-
 					@Override
 					public void onCompleted() {
 						Log.i(TAG, "onCompleted: ");
 					}
-
 					@Override
 					public void onError(Throwable e) {
 						Log.i(TAG, "onError: " + e.toString());
@@ -139,7 +131,6 @@ public class LauncherActivity extends AppCompatActivity {
 					public void onNext(CategoryResults meiziResult) {
 						Log.i(TAG, "onNext: " + meiziResult.getStatus());
 						if (meiziResult != null && meiziResult.getData() != null) {
-
 							/***
 							 * @TODO 1.创建三级目录，
 							 *  app_name
@@ -189,14 +180,10 @@ public class LauncherActivity extends AppCompatActivity {
 			String buttomImg = meiziResult.getData().get(i).getImg().getBottom();
 			String[] split = topImg.split(".com");
 			String[] split2 = buttomImg.split(".com");
-//			String Img_name = split[1].split("key=")[1];
-//			String Img_name2 = split2[1].split("key=")[1];
 			crSDFile(split[1], "top", "splash", showtime, key);
 			crSDFile(split2[1], "buttom", "splash", showtime, key);
 		}
-
 	}
-
 
 	/**
 	 * folder参数内容是要传进去的要建立的文件夹名。
@@ -215,7 +202,7 @@ public class LauncherActivity extends AppCompatActivity {
 			if (i == folder.length - 1) {
 				Log.i(TAG, "crSDFile:--- img_file: " + str + "img_url: " + img_url + "img_name: " + img_type);
 				boolean exist = FileUtils.isExist(str, img_type);
-				if (exist) {
+				if (!exist) {
 					downLoadImg(img_url, str, img_type);
 				}
 			}
@@ -227,7 +214,7 @@ public class LauncherActivity extends AppCompatActivity {
 
 
 	public void downLoadImg(String top, String img_file_path, String img_type) {
-		final File file = FileUtils.createFile(LauncherActivity.this, img_file_path, img_type);
+		final File file = FileUtils.createFile(img_file_path, img_type);
 		NetWork.getGankApi().downloadFile(top).enqueue(new retrofit2.Callback<ResponseBody>() {
 			@Override
 			public void onResponse(Call<ResponseBody> call, final Response<ResponseBody> response) {
@@ -237,18 +224,7 @@ public class LauncherActivity extends AppCompatActivity {
 					public void run() {
 						super.run();
 						//保存到本地
-						FileUtils.writeFile2Disk(response, file, new HttpCallBack() {
-							@Override
-							public void onLoading(final long current, final long total) {
-							}
-
-							@Override
-							public void isloading(boolean isloading) {
-								if (isloading) {
-
-								}
-							}
-						});
+						FileUtils.writeFile2Disk(response, file);
 					}
 				}.start();
 			}
@@ -316,14 +292,12 @@ public class LauncherActivity extends AppCompatActivity {
 			String publishedAt = meiziResult.getData().get(i).getShowtime();
 //			String nowTime = TimeUtils.getNowTime();
 //			Log.i(TAG, "getRandomImg: " + " nowTime: " + nowTime + " publishedAt: " + publishedAt);
-
 //			if (publishedAt.equals(nowTime)) {
 //				cacheMainImg(meiziResult.getData().get(i).getImg().getTop());
 //				cacheRandomImg(meiziResult.getData().get(i).getImg().getBottom());
 //				isResumes = false;
 //			}
 		}
-
 		if (isResumes) {
 			for (int i = 0; i < meiziResult.getData().size(); i++) {
 				if (meiziResult.getData().get(i).getShowtime().equals("0")) {

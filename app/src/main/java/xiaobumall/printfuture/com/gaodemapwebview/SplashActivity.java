@@ -70,11 +70,17 @@ public class SplashActivity extends AppCompatActivity {
 
 
 	public void subscribe() {
+		//@TODO  picasso 加载本地图片  ----- 先去判断本地文件夹是否存在  再去判断图片是否已经下载
 
-//		String imgCacheUrl = "http://ww3.sinaimg.cn/large/610dc034jw1f7rmrmrscrj20u011hgp1.jpg";//ConfigManage.INSTANCE.getBannerURL();
-//		String imgCacheUrl = ConfigManage.INSTANCE.getBannerURL();
-//		Log.i(TAG, "subscribe: " + imgCacheUrl);
 
+
+
+
+
+//		picassoLoadImg();
+	}
+
+	private void picassoLoadImg() {
 		if (!TextUtils.isEmpty(ConfigManage.INSTANCE.getBannerURL())&& !TextUtils.isEmpty(ConfigManage.INSTANCE.getSplashURL())) {
 			try {
 				Picasso.with(this)
