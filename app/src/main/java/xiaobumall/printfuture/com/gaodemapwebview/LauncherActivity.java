@@ -94,13 +94,14 @@ public class LauncherActivity extends AppCompatActivity {
 								@Override
 								public void run() {
 									if (!isResume) {
-										finish();
+//										finish();
+										goHomeActivity();
 										return;
 									}
-									goHomeActivity();
 								}
 							}, 1500);
 						}
+
 						@Override
 						public void onError() {
 							goHomeActivity();
@@ -122,6 +123,7 @@ public class LauncherActivity extends AppCompatActivity {
 					public void onCompleted() {
 						Log.i(TAG, "onCompleted: ");
 					}
+
 					@Override
 					public void onError(Throwable e) {
 						Log.i(TAG, "onError: " + e.toString());
@@ -201,8 +203,7 @@ public class LauncherActivity extends AppCompatActivity {
 			file = new File(str);
 			if (i == folder.length - 1) {
 				Log.i(TAG, "crSDFile:--- img_file: " + str + "img_url: " + img_url + "img_name: " + img_type);
-				boolean exist = FileUtils.isExist(str, img_type);
-				if (!exist) {
+				if (!FileUtils.isExist(str, img_type)) {
 					downLoadImg(img_url, str, img_type);
 				}
 			}

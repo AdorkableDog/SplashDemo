@@ -1,6 +1,5 @@
 package xiaobumall.printfuture.com.gaodemapwebview.utils;
 
-import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
@@ -47,6 +46,24 @@ public class FileUtils {
 		}
 		Log.d(TAG, "file " + file.getAbsolutePath());
 		return file;
+	}
+
+
+	/**
+	 * 判断根目录是否存在
+	 *
+	 * @return
+	 */
+	public static boolean isFileExists() {
+		try {
+			File f = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/splash");
+			if (!f.exists()) {
+				return false;
+			}
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
 	}
 
 	/**

@@ -3,19 +3,26 @@ package xiaobumall.printfuture.com.gaodemapwebview;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.FrameLayout;
 
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
+import java.nio.file.FileStore;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import xiaobumall.printfuture.com.gaodemapwebview.utils.ConfigManage;
+import xiaobumall.printfuture.com.gaodemapwebview.utils.FileUtils;
+import xiaobumall.printfuture.com.gaodemapwebview.utils.TimeUtils;
 
 /**
  * 创建日期：2018/1/26
@@ -72,16 +79,27 @@ public class SplashActivity extends AppCompatActivity {
 	public void subscribe() {
 		//@TODO  picasso 加载本地图片  ----- 先去判断本地文件夹是否存在  再去判断图片是否已经下载
 
+		String nowTime = TimeUtils.getNowTime();
+		if (FileUtils.isFileExists()) {
+			File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/splash");
 
+			File[] files = file.listFiles();
+			for (File f : files) {
+				String string = f.toString();
+				if (nowTime.equals(string)) {
 
+				} else {
 
+				}
+			}
+		}
 
 
 //		picassoLoadImg();
 	}
 
 	private void picassoLoadImg() {
-		if (!TextUtils.isEmpty(ConfigManage.INSTANCE.getBannerURL())&& !TextUtils.isEmpty(ConfigManage.INSTANCE.getSplashURL())) {
+		if (!TextUtils.isEmpty(ConfigManage.INSTANCE.getBannerURL()) && !TextUtils.isEmpty(ConfigManage.INSTANCE.getSplashURL())) {
 			try {
 				Picasso.with(this)
 						.load(ConfigManage.INSTANCE.getBannerURL())
