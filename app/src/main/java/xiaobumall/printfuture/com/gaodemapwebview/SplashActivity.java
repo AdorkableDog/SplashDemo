@@ -17,6 +17,7 @@ import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.nio.file.FileStore;
+import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -85,8 +86,15 @@ public class SplashActivity extends AppCompatActivity {
 
 			File[] files = file.listFiles();
 			for (File f : files) {
-				String string = f.toString();
+				String string = f.toString().split("splash/")[1];
+				//拿到对应文件的文件名称  判断和当前时间是否相同。
 				if (nowTime.equals(string)) {
+					//相同  获取文件中的
+					File file_ = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/splash/"+string);
+					File[] files1 = file_.listFiles();
+					Random random = new Random();
+					int i = random.nextInt(files1.length);
+
 
 				} else {
 
