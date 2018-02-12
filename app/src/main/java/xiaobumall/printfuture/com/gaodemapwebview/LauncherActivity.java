@@ -1,8 +1,10 @@
 package xiaobumall.printfuture.com.gaodemapwebview;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -83,7 +85,6 @@ public class LauncherActivity extends AppCompatActivity {
 
 	public void subscribe() {
 
-//		String imgCacheUrl = "http://ww3.sinaimg.cn/large/610dc034jw1f7rmrmrscrj20u011hgp1.jpg";//ConfigManage.INSTANCE.getBannerURL();
 		String imgCacheUrl = ConfigManage.INSTANCE.getSplashURL();
 		Log.i(TAG, "subscribe: " + imgCacheUrl);
 		try {
@@ -124,7 +125,6 @@ public class LauncherActivity extends AppCompatActivity {
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribe(new Observer<CategoryResults>() {
 
-
 					@Override
 					public void onCompleted() {
 						Log.i(TAG, "onCompleted: ");
@@ -133,35 +133,30 @@ public class LauncherActivity extends AppCompatActivity {
 					@Override
 					public void onError(Throwable e) {
 						Log.i(TAG, "onError: " + e.toString());
-//						CategoryResults datas = (CategoryResults)getDatas();
-//						getRandomImg(datas);
-//						getDatas();
 					}
 
 					@Override
 					public void onNext(CategoryResults meiziResult) {
 						Log.i(TAG, "onNext: " + meiziResult.getStatus());
 						if (meiziResult != null && meiziResult.getData() != null) {
-//							setDatas(meiziResult);
-//							getRandomImg(meiziResult);
-							// 1 、判断手机SD 是否存在
-							String top = null, Bottom = null;
-							//@TODO --------------------------------------------
-							for (int i = 0; i < meiziResult.getData().size(); i++) {
-								top = meiziResult.getData().get(i).getImg().getTop();
-								String[] split = top.split(".com");
-								String s = split[1].split("key=")[1];
-								downLoadImg(split[1], s);
-							}
 
-							for (int i = 0; i < meiziResult.getData().size(); i++) {
-								Bottom = meiziResult.getData().get(i).getImg().getBottom();
-								String[] split = Bottom.split(".com");
-								String s = split[1].split("key=")[1];
-								downLoadImg(split[1], s);
-							}
-//							int size = meiziResult.getData().size();
-
+							/***
+							 * @TODO 1.创建三级目录，
+							 *  app_name
+							 *     |-- splash
+							 *          |-- 活动file（20180214）
+							 *              |-- 对应文件 --- top\buttom
+							 *              |-- 对应文件 --- top\buttom
+							 *              |-- 对应文件 --- top\buttom
+							 *              ....
+							 *           |-- 活动file（20180215）
+							 *              |-- 对应文件 --- top\buttom
+							 *              |-- 对应文件 --- top\buttom
+							 *              |-- 对应文件 --- top\buttom
+							 *              ....
+							 */
+							//@TODO 判断文件夹和img_是否存在 存在就不创建，没有再去创建
+							createFiles(meiziResult);
 						}
 					}
 				});
@@ -169,8 +164,70 @@ public class LauncherActivity extends AppCompatActivity {
 	}
 
 
-	public void downLoadImg(String top, String img_name) {
-		final File file = FileUtils.createFile(LauncherActivity.this, img_name);
+	/***
+	 * 创建三级目录，
+	 *  app_name
+	 *     |-- splash
+	 *          |-- 活动file（20180214）
+	 *              |-- 对应文件
+	 *                       --- top\buttom
+	 *              |-- 对应文件 --- top\buttom
+	 *              |-- 对应文件 --- top\buttom
+	 *              ....
+	 *           |-- 活动file（20180215）
+	 *              |-- 对应文件 --- top\buttom
+	 *              |-- 对应文件 --- top\buttom
+	 *              |-- 对应文件 --- top\buttom
+	 *              ....
+	 * @param meiziResult
+	 */
+	private void createFiles(CategoryResults meiziResult) {
+		for (int i = 0; i < meiziResult.getData().size(); i++) {
+			String showtime = meiziResult.getData().get(i).getShowtime();
+			String key = meiziResult.getData().get(i).getKey();
+			String topImg = meiziResult.getData().get(i).getImg().getTop();
+			String buttomImg = meiziResult.getData().get(i).getImg().getBottom();
+			String[] split = topImg.split(".com");
+			String[] split2 = buttomImg.split(".com");
+//			String Img_name = split[1].split("key=")[1];
+//			String Img_name2 = split2[1].split("key=")[1];
+			crSDFile(split[1], "top", "splash", showtime, key);
+			crSDFile(split2[1], "buttom", "splash", showtime, key);
+		}
+
+	}
+
+
+	/**
+	 * folder参数内容是要传进去的要建立的文件夹名。
+	 * 例如建立 mnt/sdcard/splash/1/2 这样的路径文件夹。那么传进去参数就可以为 crSDFile(ceshi,1,2); 即可
+	 *
+	 * @param folder
+	 */
+	public void crSDFile(String img_url, String img_type, String... folder) {
+		int length = folder.length;
+		String genFolder = Environment.getExternalStorageDirectory().getAbsolutePath();
+		String str = genFolder + "/";
+		File file;
+		for (int i = 0; i < length; i++) {
+			str = str + folder[i] + "/";
+			file = new File(str);
+			if (i == folder.length - 1) {
+				Log.i(TAG, "crSDFile:--- img_file: " + str + "img_url: " + img_url + "img_name: " + img_type);
+				boolean exist = FileUtils.isExist(str, img_type);
+				if (exist) {
+					downLoadImg(img_url, str, img_type);
+				}
+			}
+			if (!file.exists()) {
+				file.mkdir();
+			}
+		}
+	}
+
+
+	public void downLoadImg(String top, String img_file_path, String img_type) {
+		final File file = FileUtils.createFile(LauncherActivity.this, img_file_path, img_type);
 		NetWork.getGankApi().downloadFile(top).enqueue(new retrofit2.Callback<ResponseBody>() {
 			@Override
 			public void onResponse(Call<ResponseBody> call, final Response<ResponseBody> response) {
@@ -183,7 +240,6 @@ public class LauncherActivity extends AppCompatActivity {
 						FileUtils.writeFile2Disk(response, file, new HttpCallBack() {
 							@Override
 							public void onLoading(final long current, final long total) {
-
 							}
 
 							@Override
@@ -199,7 +255,6 @@ public class LauncherActivity extends AppCompatActivity {
 
 			@Override
 			public void onFailure(Call<ResponseBody> call, Throwable t) {
-
 			}
 		});
 	}

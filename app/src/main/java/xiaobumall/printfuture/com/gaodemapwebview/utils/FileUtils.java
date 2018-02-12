@@ -30,17 +30,31 @@ public class FileUtils {
 
 	private static final String TAG = "FileUtils";
 
-	public static File createFile(Context context, String img_name) {
+
+	public static File createFile(Context context, String img_name, String img_type) {
 		File file = null;
 		String state = Environment.getExternalStorageState();
 
-		if(state.equals(Environment.MEDIA_MOUNTED)){
-			file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+ img_name+".jpg");
-		}else {
-			file = new File(context.getCacheDir().getAbsolutePath()+"/"+ img_name+".jpg");
+		if (state.equals(Environment.MEDIA_MOUNTED)) {
+			file = new File(img_name + img_type + ".jpg");
+		} else {
+			file = new File(img_name + img_type + ".jpg");
 		}
 		Log.d(TAG, "file " + file.getAbsolutePath());
 		return file;
+	}
+
+	public static boolean isExist(String path, String img_name) {
+		try {
+			File f = new File(path  + img_name + ".jpg");
+			if (!f.exists()) {
+				return false;
+			}
+
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
 	}
 
 
@@ -48,7 +62,7 @@ public class FileUtils {
 		long currentLength = 0;
 		OutputStream os = null;
 		InputStream is = response.body().byteStream();
-		long totalLength =response.body().contentLength();
+		long totalLength = response.body().contentLength();
 		boolean isloading = false;
 		try {
 			os = new FileOutputStream(file);

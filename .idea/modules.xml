@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/AppProject.iml" filepath="$PROJECT_DIR$/AppProject.iml" />
       <module fileurl="file://E:\androidFile\SplashDemo\AppProject.iml" filepath="E:\androidFile\SplashDemo\AppProject.iml" />
-      <module fileurl="file://$PROJECT_DIR$/SplashDemo.iml" filepath="$PROJECT_DIR$/SplashDemo.iml" />
+      <module fileurl="file://E:\AppProject\SplashDemo.iml" filepath="E:\AppProject\SplashDemo.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://E:\androidFile\SplashDemo\app\app.iml" filepath="E:\androidFile\SplashDemo\app\app.iml" />
       <module fileurl="file://E:\androidFile\SplashDemo\rxcache\rxcache.iml" filepath="E:\androidFile\SplashDemo\rxcache\rxcache.iml" />
