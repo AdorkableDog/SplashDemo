@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageView;
+import android.text.LoginFilter;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.FrameLayout;
@@ -53,6 +54,7 @@ public class SplashActivity extends AppCompatActivity {
 
 	private boolean isResume;
 
+
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -83,21 +85,38 @@ public class SplashActivity extends AppCompatActivity {
 		String nowTime = TimeUtils.getNowTime();
 		if (FileUtils.isFileExists()) {
 			File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/splash");
-
 			File[] files = file.listFiles();
+			int Tag = 0;
 			for (File f : files) {
 				String string = f.toString().split("splash/")[1];
-				//拿到对应文件的文件名称  判断和当前时间是否相同。
+				//@TODO 拿到对应文件的文件名称  判断和当前时间是否相同。
 				if (nowTime.equals(string)) {
 					//相同  获取文件中的
-					File file_ = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/splash/"+string);
+					File file_ = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/splash/" + string);
 					File[] files1 = file_.listFiles();
-					Random random = new Random();
-					int i = random.nextInt(files1.length);
-
+					for (File file1 : files1) {
+						File[] file_list = new File(file1 + "").listFiles();
+						for (File file2 : file_list) {
+							Log.i(TAG, "file2: " + file2);
+						}
+					}
+//					Random random = new Random();
+//					int i = random.nextInt(files1.length);
 
 				} else {
-
+					/**
+					 * 不相同
+					 */
+					Tag++;
+					if (Tag == 1) {
+						File defult_img = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/splash/0");
+						File[] defult_img_list = defult_img.listFiles();
+						int length = defult_img_list.length;
+						Log.i(TAG, "subscribe: " + length);
+						for (File ignored : defult_img_list) {
+							Log.i(TAG, "ignored: " + ignored);
+						}
+					}
 				}
 			}
 		}
@@ -124,6 +143,7 @@ public class SplashActivity extends AppCompatActivity {
 									}
 								}, 5000);
 							}
+
 							@Override
 							public void onError() {
 								goHomeActivity();
@@ -147,6 +167,7 @@ public class SplashActivity extends AppCompatActivity {
 									}
 								}, 5000);
 							}
+
 							@Override
 							public void onError() {
 								goHomeActivity();

@@ -1,6 +1,5 @@
 package xiaobumall.printfuture.com.gaodemapwebview;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
@@ -32,7 +31,6 @@ import xiaobumall.printfuture.com.gaodemapwebview.entity.CategoryResults;
 import xiaobumall.printfuture.com.gaodemapwebview.network.NetWork;
 import xiaobumall.printfuture.com.gaodemapwebview.utils.ConfigManage;
 import xiaobumall.printfuture.com.gaodemapwebview.utils.FileUtils;
-import xiaobumall.printfuture.com.gaodemapwebview.utils.HttpCallBack;
 
 /**
  * 创建日期：2018/1/26
@@ -93,11 +91,11 @@ public class LauncherActivity extends AppCompatActivity {
 							handler.postDelayed(new Runnable() {
 								@Override
 								public void run() {
-									if (!isResume) {
+//									if (!isResume) {
 //										finish();
 										goHomeActivity();
 										return;
-									}
+//									}
 								}
 							}, 1500);
 						}
