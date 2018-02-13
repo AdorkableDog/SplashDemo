@@ -8,7 +8,6 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageView;
-import android.text.LoginFilter;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.FrameLayout;
@@ -17,7 +16,9 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
-import java.nio.file.FileStore;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 import butterknife.BindView;
@@ -40,7 +41,6 @@ import xiaobumall.printfuture.com.gaodemapwebview.utils.TimeUtils;
 
 public class SplashActivity extends AppCompatActivity {
 
-
 	private static final String TAG = "SplashActivity";
 	@BindView(R.id.img_launcher_welcome)
 	AppCompatImageView mImageView;
@@ -50,9 +50,8 @@ public class SplashActivity extends AppCompatActivity {
 
 	@BindView(R.id.frameLayout)
 	FrameLayout frameLayout;
-
-
 	private boolean isResume;
+	Random random = new Random();
 
 
 	@Override
@@ -80,11 +79,14 @@ public class SplashActivity extends AppCompatActivity {
 
 
 	public void subscribe() {
+		HashMap imgFeastPathUrl=new HashMap();
+		HashMap imgDefultPathUrl=new HashMap();
 		//@TODO  picasso 加载本地图片  ----- 先去判断本地文件夹是否存在  再去判断图片是否已经下载
 
 		String nowTime = TimeUtils.getNowTime();
 		if (FileUtils.isFileExists()) {
-			File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/splash");
+			String absolutePath = Environment.getExternalStorageDirectory().getAbsolutePath();
+			File file = new File(absolutePath + "/splash");
 			File[] files = file.listFiles();
 			int Tag = 0;
 			for (File f : files) {
@@ -92,33 +94,59 @@ public class SplashActivity extends AppCompatActivity {
 				//@TODO 拿到对应文件的文件名称  判断和当前时间是否相同。
 				if (nowTime.equals(string)) {
 					//相同  获取文件中的
-					File file_ = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/splash/" + string);
+					File file_ = new File(absolutePath + "/splash/" + string);
 					File[] files1 = file_.listFiles();
 					for (File file1 : files1) {
 						File[] file_list = new File(file1 + "").listFiles();
 						for (File file2 : file_list) {
-							Log.i(TAG, "file2: " + file2);
+//							Log.i(TAG, "img_feast_top_buttom: " + file2);
+							String top_feast_img = file2 + "";
+							if (top_feast_img.contains("top.jpg")) {
+								Log.i(TAG, "img_feast_top_buttom--top.jpg: " + file2);
+								imgFeastPathUrl.put("top.jpg",file2+"");
+							}
+							if (top_feast_img.contains("buttom.jpg")) {
+								Log.i(TAG, "img_feast_top_buttom--buttom.jpg: " + file2);
+								imgFeastPathUrl.put("buttom.jpg",file2+"");
+							}
 						}
 					}
-//					Random random = new Random();
-//					int i = random.nextInt(files1.length);
-
 				} else {
 					/**
 					 * 不相同
 					 */
 					Tag++;
 					if (Tag == 1) {
-						File defult_img = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/splash/0");
+						File defult_img = new File(absolutePath + "/splash/0");
 						File[] defult_img_list = defult_img.listFiles();
-						int length = defult_img_list.length;
-						Log.i(TAG, "subscribe: " + length);
-						for (File ignored : defult_img_list) {
-							Log.i(TAG, "ignored: " + ignored);
+						int i = random.nextInt(defult_img_list.length);
+						File file1 = defult_img_list[i];
+						File[] file_list = new File(file1 + "").listFiles();
+						for (File files2 : file_list) {
+//							Log.i(TAG, "img_defult_top_buttom: " + files2);
+							String top_feast_img = files2 + "";
+							Log.i(TAG, "top_feast_img: "+ top_feast_img);
+
+							if (top_feast_img.contains("top.jpg")) {
+								Log.i(TAG, "img_defult_top_buttom--top.jpg: " + files2);
+								imgDefultPathUrl.put("top.jpg",files2+"");
+							}
+
+							if (top_feast_img.contains("buttom.jpg")) {
+								Log.i(TAG, "img_defult_top_buttom--buttom.jpg: " + files2);
+								imgDefultPathUrl.put("buttom.jpg",files2+"");
+							}
+
 						}
 					}
 				}
 			}
+		}
+
+		if (imgFeastPathUrl.size() != 0) {//如果活动的集合不为空  图片获取从 活动集合中获取
+			Log.i(TAG, "活动图片路径 top :  " + imgFeastPathUrl.get("top.jpg") + "\n" + " buttom : " + imgFeastPathUrl.get("buttom.jpg"));
+		} else {
+			Log.i(TAG, "默认图片路径 top :  " + imgDefultPathUrl.get("top.jpg") + "\n" + " buttom : " + imgDefultPathUrl.get("buttom.jpg"));
 		}
 //		picassoLoadImg();
 	}

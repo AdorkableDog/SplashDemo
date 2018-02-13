@@ -10,11 +10,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.Log;
 
+import com.lei.lib.java.rxcache.RxCache;
+import com.lei.lib.java.rxcache.entity.CacheResponse;
+import com.lei.lib.java.rxcache.util.RxUtil;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -261,7 +265,7 @@ public class LauncherActivity extends AppCompatActivity {
 //				});
 //		getDatas();
 //	}
-
+//
 //	private void getDatas() {
 //		RxCache.getInstance()
 //				.get("meiziResult", false, CategoryResults.class)
