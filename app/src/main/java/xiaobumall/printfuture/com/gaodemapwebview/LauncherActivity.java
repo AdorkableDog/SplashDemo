@@ -55,7 +55,8 @@ public class LauncherActivity extends AppCompatActivity {
 	AppCompatImageView mImageView;
 
 	private CompositeSubscription mSubscriptions;
-	private boolean isResume;
+	private boolean isResume = false;
+
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,19 +68,16 @@ public class LauncherActivity extends AppCompatActivity {
 
 		cacheRandomImg();
 		subscribe();
-
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		isResume = true;
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
-		isResume = false;
 	}
 
 	public void subscribe() {
@@ -95,11 +93,12 @@ public class LauncherActivity extends AppCompatActivity {
 							handler.postDelayed(new Runnable() {
 								@Override
 								public void run() {
-//									if (!isResume) {
-//										finish();
+									if (isResume) {
 										goHomeActivity();
 										return;
-//									}
+									} else {
+										goSplashActivity();
+									}
 								}
 							}, 1500);
 						}
@@ -113,6 +112,7 @@ public class LauncherActivity extends AppCompatActivity {
 			goHomeActivity();
 		}
 	}
+
 
 	private void cacheRandomImg() {
 		Observable<CategoryResults> observable;
@@ -129,6 +129,33 @@ public class LauncherActivity extends AppCompatActivity {
 					@Override
 					public void onError(Throwable e) {
 						Log.i(TAG, "onError: " + e.toString());
+						/**
+						 * 两种情况
+						 * 1。有网络 没有下载 -------- 直接去下载
+						 * 2.
+						 * |-- 1。没有网络 但是已经下载完成所有的图片，
+						 * |-- 2。没有网络  没有下载.
+						 */
+						//@TODO error 情况下 先去判断有无下载图片
+						if (!FileUtils.isFileExists()) {
+							isResume = true;
+						} else {
+							File files = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/splash");
+							File[] files1 = files.listFiles();
+							for (File file : files1) {
+								File file1 = new File(file + "");
+								File[] files2 = file1.listFiles();
+								for (File file2 : files2) {
+									File[] files3 = new File(file2 + "").listFiles();
+									Log.i(TAG, "files1: " + files3.length);
+									if (files3.length == 0) {
+										isResume = true;
+										return;
+									}
+								}
+							}
+							isResume = false;
+						}
 					}
 
 					@Override
@@ -331,12 +358,20 @@ public class LauncherActivity extends AppCompatActivity {
 		});
 	}
 
-	public void goHomeActivity() {
+	public void goSplashActivity() {
 		Intent intent = new Intent(LauncherActivity.this, SplashActivity.class);
 		startActivity(intent);
 		// Activity 切换淡入淡出动画
 		finish();
 //		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+	}
+
+	public void goHomeActivity() {
+		Intent intent = new Intent(LauncherActivity.this, HomeActivity.class);
+		startActivity(intent);
+//		 Activity 切换淡入淡出动画
+		finish();
+		overridePendingTransition(R.anim.anim_slide_in, R.anim.anim_slide_out);
 	}
 
 	public void cacheRandomImg(final String imgUrl) {

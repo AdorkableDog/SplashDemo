@@ -16,9 +16,7 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Random;
 
 import butterknife.BindView;
@@ -79,8 +77,8 @@ public class SplashActivity extends AppCompatActivity {
 
 
 	public void subscribe() {
-		HashMap imgFeastPathUrl=new HashMap();
-		HashMap imgDefultPathUrl=new HashMap();
+		HashMap imgFeastPathUrl = new HashMap();
+		HashMap imgDefultPathUrl = new HashMap();
 		//@TODO  picasso 加载本地图片  ----- 先去判断本地文件夹是否存在  再去判断图片是否已经下载
 
 		String nowTime = TimeUtils.getNowTime();
@@ -96,26 +94,26 @@ public class SplashActivity extends AppCompatActivity {
 					//相同  获取文件中的
 					File file_ = new File(absolutePath + "/splash/" + string);
 					File[] files1 = file_.listFiles();
-					for (File file1 : files1) {
-						File[] file_list = new File(file1 + "").listFiles();
-						for (File file2 : file_list) {
-//							Log.i(TAG, "img_feast_top_buttom: " + file2);
-							String top_feast_img = file2 + "";
-							if (top_feast_img.contains("top.jpg")) {
-								Log.i(TAG, "img_feast_top_buttom--top.jpg: " + file2);
-								imgFeastPathUrl.put("top.jpg",file2+"");
-							}
-							if (top_feast_img.contains("buttom.jpg")) {
-								Log.i(TAG, "img_feast_top_buttom--buttom.jpg: " + file2);
-								imgFeastPathUrl.put("buttom.jpg",file2+"");
-							}
+
+					int i = random.nextInt(files1.length);
+					File file0 = files1[i];
+					File[] file_list = new File(file0 + "").listFiles();
+					for (File filelist : file_list) {
+						Log.i(TAG, "img_feast_top_buttom: " + filelist);
+
+						String top_feast_img = filelist + "";
+						if (top_feast_img.contains("top.jpg")) {
+							imgFeastPathUrl.put("top.jpg", filelist + "");
+						}
+						if (top_feast_img.contains("buttom.jpg")) {
+							imgFeastPathUrl.put("buttom.jpg", filelist + "");
 						}
 					}
 				} else {
 					/**
 					 * 不相同
 					 */
-					Tag++;
+					Tag++;//foreach循环只执行一次
 					if (Tag == 1) {
 						File defult_img = new File(absolutePath + "/splash/0");
 						File[] defult_img_list = defult_img.listFiles();
@@ -123,20 +121,14 @@ public class SplashActivity extends AppCompatActivity {
 						File file1 = defult_img_list[i];
 						File[] file_list = new File(file1 + "").listFiles();
 						for (File files2 : file_list) {
-//							Log.i(TAG, "img_defult_top_buttom: " + files2);
 							String top_feast_img = files2 + "";
-							Log.i(TAG, "top_feast_img: "+ top_feast_img);
-
 							if (top_feast_img.contains("top.jpg")) {
-								Log.i(TAG, "img_defult_top_buttom--top.jpg: " + files2);
-								imgDefultPathUrl.put("top.jpg",files2+"");
+								imgDefultPathUrl.put("top.jpg", files2 + "");
 							}
 
 							if (top_feast_img.contains("buttom.jpg")) {
-								Log.i(TAG, "img_defult_top_buttom--buttom.jpg: " + files2);
-								imgDefultPathUrl.put("buttom.jpg",files2+"");
+								imgDefultPathUrl.put("buttom.jpg", files2 + "");
 							}
-
 						}
 					}
 				}
@@ -145,17 +137,26 @@ public class SplashActivity extends AppCompatActivity {
 
 		if (imgFeastPathUrl.size() != 0) {//如果活动的集合不为空  图片获取从 活动集合中获取
 			Log.i(TAG, "活动图片路径 top :  " + imgFeastPathUrl.get("top.jpg") + "\n" + " buttom : " + imgFeastPathUrl.get("buttom.jpg"));
+			picassoLoadImg(new File(imgFeastPathUrl.get("top.jpg")+""),new File(imgFeastPathUrl.get("buttom.jpg")+""));
 		} else {
 			Log.i(TAG, "默认图片路径 top :  " + imgDefultPathUrl.get("top.jpg") + "\n" + " buttom : " + imgDefultPathUrl.get("buttom.jpg"));
+
+			File top = new File(imgDefultPathUrl.get("top.jpg") + "");
+			File buttom = new File(imgDefultPathUrl.get("buttom.jpg") + "");
+
+
+			picassoLoadImg(top, buttom);
+
+
 		}
 //		picassoLoadImg();
 	}
 
-	private void picassoLoadImg() {
-		if (!TextUtils.isEmpty(ConfigManage.INSTANCE.getBannerURL()) && !TextUtils.isEmpty(ConfigManage.INSTANCE.getSplashURL())) {
+	private void picassoLoadImg(File top, File buttom) {
+		if (top!=null && buttom!=null) {
 			try {
 				Picasso.with(this)
-						.load(ConfigManage.INSTANCE.getBannerURL())
+						.load(buttom)
 						.into(imgLauncherWelcomeButtom, new Callback() {
 							@Override
 							public void onSuccess() {
@@ -163,10 +164,10 @@ public class SplashActivity extends AppCompatActivity {
 								handler.postDelayed(new Runnable() {
 									@Override
 									public void run() {
-										if (!isResume) {
-											finish();
-											return;
-										}
+//										if (!isResume) {
+//											finish();
+//											return;
+//										}
 										goHomeActivity();
 									}
 								}, 5000);
@@ -179,7 +180,7 @@ public class SplashActivity extends AppCompatActivity {
 						});
 
 				Picasso.with(this)
-						.load(ConfigManage.INSTANCE.getSplashURL())
+						.load(top)
 						.into(mImageView, new Callback() {
 							@Override
 							public void onSuccess() {
@@ -187,10 +188,10 @@ public class SplashActivity extends AppCompatActivity {
 								handler.postDelayed(new Runnable() {
 									@Override
 									public void run() {
-										if (!isResume) {
-											finish();
-											return;
-										}
+//										if (!isResume) {
+//											finish();
+//											return;
+//										}
 										goHomeActivity();
 									}
 								}, 5000);
